@@ -3,18 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\UserProfile;
-use App\Http\Requests\ProfileUpdateRequest;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\View\View;
+use Illuminate\Support\Facades\Storage;
 
 class ProfileController extends Controller
 {
-    /**
-     * Display the user's profile form.
-     */
     public function edit()
     {
         $user = Auth::user();
@@ -31,7 +25,7 @@ class ProfileController extends Controller
             'address' => 'nullable|string|max:500',
             'skills' => 'nullable|string',
             'experience' => 'nullable|string',
-            'cv' => 'nullable|file|mimes:pdf|max:2048'
+            'cv' => 'nullable|file|mimes:pdf|max:10240'
         ]);
 
         $profile = $user->profile ?? new UserProfile();
@@ -42,8 +36,8 @@ class ProfileController extends Controller
         $profile->experience = $request->experience;
 
         if ($request->hasFile('cv')) {
-            if ($profile->cv_path && Storage::exists('public/' . $profile->cv_path)) {
-                Storage::delete('public/' . $profile->cv_path);
+            if ($profile->cv_path && Storage::disk('public')->exists($profile->cv_path)) {
+                Storage::disk('public')->delete($profile->cv_path);
             }
             
             $path = $request->file('cv')->store('cvs', 'public');
@@ -52,6 +46,6 @@ class ProfileController extends Controller
 
         $profile->save();
 
-        return redirect()->back()->with('success', 'Profile berhasil diperbarui!');
+        return redirect()->back()->with('success', '✅ Profil berhasil diperbarui!');
     }
 }
