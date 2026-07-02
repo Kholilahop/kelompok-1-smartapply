@@ -1,17 +1,21 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Dashboard') }}
-        </h2>
-    </x-slot>
-
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900">
-                    {{ __("You're logged in!") }}
-                </div>
-            </div>
+@extends('layouts.app')
+@section('title', 'Dashboard')
+@section('breadcrumb', 'Dashboard')
+@section('content')
+<div class="row">
+    <div class="col-lg-3 col-6">
+        <div class="small-box bg-info">
+            <div class="inner"><h3>{{ \App\Models\Job::count() }}</h3><p>Total Lowongan</p></div>
+            <div class="icon"><i class="fas fa-briefcase"></i></div>
+            <a href="{{ route('jobs.index') }}" class="small-box-footer">Lihat <i class="fas fa-arrow-circle-right"></i></a>
         </div>
     </div>
-</x-app-layout>
+    <div class="col-lg-3 col-6">
+        <div class="small-box bg-success">
+            <div class="inner"><h3>{{ Auth::user()->applications()->count() }}</h3><p>Lamaran Dikirim</p></div>
+            <div class="icon"><i class="fas fa-file-alt"></i></div>
+            <a href="{{ route('applications.history') }}" class="small-box-footer">Lihat <i class="fas fa-arrow-circle-right"></i></a>
+        </div>
+    </div>
+</div>
+@endsection

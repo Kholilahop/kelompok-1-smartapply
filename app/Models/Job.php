@@ -9,6 +9,8 @@ class Job extends Model
 {
     use HasFactory;
 
+    protected $table = 'job_listings';  // ← PASTIKAN INI!
+
     protected $fillable = [
         'title',
         'company',

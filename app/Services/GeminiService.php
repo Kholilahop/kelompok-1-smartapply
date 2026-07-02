@@ -36,11 +36,12 @@ class GeminiService
         $prompt .= "\nSurat lamaran harus dalam bahasa Indonesia yang formal dan profesional.";
 
         try {
-            // Pakai Facade Gemini dari package yasser-elgammal/laravel-gemini
+            // Coba pake model yang berbeda
             $response = Gemini::generate($prompt);
             return $response;
             
         } catch (\Exception $e) {
+            \Log::error('Gemini error: ' . $e->getMessage());
             return $this->generateFallbackCoverLetter($user, $job);
         }
     }
@@ -49,15 +50,27 @@ class GeminiService
     {
         $profile = $user->profile;
         $skills = $profile ? $profile->skills : 'Skill belum diisi';
+        $experience = $profile ? $profile->experience : 'Pengalaman belum diisi';
+        $phone = $profile ? $profile->phone : 'Nomor HP belum diisi';
+        $address = $profile ? $profile->address : 'Alamat belum diisi';
         
         return "Kepada Yth. HRD {$job->company}\n\n" .
                "Dengan hormat,\n\n" .
                "Saya {$user->name}, dengan ini mengajukan lamaran untuk posisi {$job->title} di {$job->company}.\n\n" .
-               "Saya memiliki skill: {$skills}\n\n" .
+               "Biodata singkat:\n" .
+               "Nama: {$user->name}\n" .
+               "Email: {$user->email}\n" .
+               "No HP: {$phone}\n" .
+               "Alamat: {$address}\n\n" .
+               "Saya memiliki keahlian sebagai berikut:\n" .
+               "{$skills}\n\n" .
+               "Pengalaman kerja saya:\n" .
+               "{$experience}\n\n" .
                "Saya tertarik dengan posisi ini karena sesuai dengan pengalaman dan keahlian saya.\n\n" .
+               "Saya siap untuk bergabung dan berkontribusi untuk perusahaan {$job->company}.\n\n" .
                "Demikian surat lamaran ini saya buat. Terima kasih atas perhatiannya.\n\n" .
                "Hormat saya,\n" .
                "{$user->name}\n" .
-               "Email: {$user->email}\n";
+               "Email: {$user->email}";
     }
 }
