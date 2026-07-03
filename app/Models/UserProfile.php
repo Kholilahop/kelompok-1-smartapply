@@ -15,7 +15,8 @@ class UserProfile extends Model
         'address',
         'skills',
         'experience',
-        'cv_path'
+        'cv_path',
+        'photo'  // ← TAMBAHKAN INI!
     ];
 
     public function user()

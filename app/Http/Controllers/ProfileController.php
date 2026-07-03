@@ -3,18 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\UserProfile;
-use App\Http\Requests\ProfileUpdateRequest;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\View\View;
+use Illuminate\Support\Facades\Storage;
 
 class ProfileController extends Controller
 {
-    /**
-     * Display the user's profile form.
-     */
     public function edit()
     {
         $user = Auth::user();
@@ -31,7 +25,8 @@ class ProfileController extends Controller
             'address' => 'nullable|string|max:500',
             'skills' => 'nullable|string',
             'experience' => 'nullable|string',
-            'cv' => 'nullable|file|mimes:pdf|max:2048'
+            'cv' => 'nullable|file|mimes:pdf|max:10240',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'  // ← TAMBAHKAN INI!
         ]);
 
         $profile = $user->profile ?? new UserProfile();
@@ -41,17 +36,26 @@ class ProfileController extends Controller
         $profile->skills = $request->skills;
         $profile->experience = $request->experience;
 
+        // Upload CV
         if ($request->hasFile('cv')) {
-            if ($profile->cv_path && Storage::exists('public/' . $profile->cv_path)) {
-                Storage::delete('public/' . $profile->cv_path);
+            if ($profile->cv_path && Storage::disk('public')->exists($profile->cv_path)) {
+                Storage::disk('public')->delete($profile->cv_path);
             }
-            
             $path = $request->file('cv')->store('cvs', 'public');
             $profile->cv_path = $path;
         }
 
+        // Upload Foto Profil
+        if ($request->hasFile('photo')) {
+            if ($profile->photo && Storage::disk('public')->exists($profile->photo)) {
+                Storage::disk('public')->delete($profile->photo);
+            }
+            $path = $request->file('photo')->store('photos', 'public');
+            $profile->photo = $path;
+        }
+
         $profile->save();
 
-        return redirect()->back()->with('success', 'Profile berhasil diperbarui!');
+        return redirect()->back()->with('success', '✅ Profil berhasil diperbarui!');
     }
 }
