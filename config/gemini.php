@@ -1,61 +1,9 @@
 <?php
 
 return [
-
-    /*
-    |--------------------------------------------------------------------------
-    | Gemini API Key
-    |--------------------------------------------------------------------------
-    */
-
-    'api_key' => env('GEMINI_API_KEY'),
-
-    /*
-    |--------------------------------------------------------------------------
-    | Gemini Base URL
-    |--------------------------------------------------------------------------
-    */
-
-    'base_url' => env('GEMINI_BASE_URL', 'https://generativelanguage.googleapis.com/v1beta'),
-
-    /*
-    |--------------------------------------------------------------------------
-    | Default Model
-    |--------------------------------------------------------------------------
-    */
-
-    'model' => env('GEMINI_MODEL', 'gemini-1.0-pro'),  // ← GANTI KE gemini-1.0-pro!
-
-    /*
-    |--------------------------------------------------------------------------
-    | HTTP Timeout
-    |--------------------------------------------------------------------------
-    */
-
-    'timeout' => env('GEMINI_TIMEOUT', 30),
-
-    /*
-    |--------------------------------------------------------------------------
-    | Retry Settings
-    |--------------------------------------------------------------------------
-    */
-
-    'retry' => [
-        'times' => env('GEMINI_RETRY_TIMES', 0),
-        'sleep' => env('GEMINI_RETRY_SLEEP', 100),
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Default Generation Options
-    |--------------------------------------------------------------------------
-    */
-
-    'generation' => [
-        'temperature' => env('GEMINI_TEMPERATURE', 0.7),
-        'max_output_tokens' => env('GEMINI_MAX_OUTPUT_TOKENS', 2048),
-        'top_p' => env('GEMINI_TOP_P', 0.95),
-        'top_k' => env('GEMINI_TOP_K', 40),
-    ],
-
+    'api_key' => env('GEMINI_API_KEY', ''),
+    'model' => env('GEMINI_MODEL', 'gemini-pro'),
+    'timeout' => env('GEMINI_TIMEOUT', 60),
+    'temperature' => env('GEMINI_TEMPERATURE', 0.7),
+    'max_tokens' => env('GEMINI_MAX_OUTPUT_TOKENS', 2048),
 ];
