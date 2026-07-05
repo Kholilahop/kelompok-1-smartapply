@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Job;
 use App\Models\Application;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use App\Services\GeminiService;
 
 class ApplicationController extends Controller
@@ -29,35 +31,44 @@ class ApplicationController extends Controller
      */
     public function generateCoverLetter(Request $request)
     {
-        $request->validate([
-            'job_id' => 'required|exists:jobs,id',
-        ]);
-
-        // Ambil data job
-        $job = Job::find($request->job_id);
-        
-        // Ambil data user/profile
-        $user = auth()->user();
-        $nama = $user->name ?? 'Pelamar';
-        $posisi = $job->title;
-        $skill = $job->requirements ?? 'Skill yang relevan';
-
-        $result = $this->geminiService->generateCoverLetter([
-            'nama' => $nama,
-            'posisi' => $posisi,
-            'skill' => $skill,
-        ]);
-
-        if ($result['success']) {
-            return response()->json([
-                'cover_letter' => $result['cover_letter']
+        try {
+            $request->validate([
+                'job_id' => 'required|exists:job_listings,id'
             ]);
-        }
 
-        return response()->json([
-            'message' => $result['message'] ?? 'Gagal generate surat lamaran'
-        ], 500);
-    }
+            $user = Auth::user();
+            $job = Job::findOrFail($request->job_id);
+
+            $result = $this->geminiService->generateCoverLetter([
+                'user' => $user,
+                'job' => $job,
+            ]);
+
+            return response()->json($result);
+
+        } catch (\Exception $e) {
+            Log::error('Generate error: ' . $e->getMessage());
+
+            // FALLBACK
+            try {
+                $user = Auth::user();
+                $job = Job::findOrFail($request->job_id);
+
+                $fallback = $this->geminiService->generateFallbackCoverLetter($user, $job);
+
+                return response()->json([
+                    'success' => true,
+                    'cover_letter' => $fallback,
+                    'fallback' => true
+                ]);
+            } catch (\Exception $e2) {
+                return response()->json([
+                    'success' => false,
+                    'error' => $e2->getMessage()
+                ], 500);
+            }
+        }
+}
 
     /**
      * Store a newly created application.

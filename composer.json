@@ -10,7 +10,6 @@
     "license": "MIT",
     "require": {
         "php": "^8.3",
-        "google/apiclient": "^2.19",
         "laravel/framework": "^13.8",
         "laravel/tinker": "^3.0",
         "yajra/laravel-datatables": "13.0",
