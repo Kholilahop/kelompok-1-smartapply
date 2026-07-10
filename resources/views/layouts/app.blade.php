@@ -385,7 +385,7 @@ body {
     <nav class="sa-navbar">
         <a href="{{ route('dashboard') }}" class="sa-brand">
             <span class="sa-logo-badge">SA</span>
-            SmartApply
+            SmartApply1
         </a>
 
         <ul class="sa-nav-links">
